@@ -9,6 +9,9 @@ def get_review_page_urls(movie_url):
     Given a movie_url, it returns a list of urls of all review pages.
     In fact, if a movie has more than 10 reviews, each 10 reviews are in a different page.
     """
+    # TODO: when there is more than 10 review pages, you must click on the last page to get 20 review pages
+    # ... or you can take the number of reviews and scrap until you reach the final page, bare in mind that
+    # there is 10 reviews per page
     review_url = movie_url + '/reviews'
     soup = bs(requests.get(review_url).content, "html.parser")
     review_page_urls = []
@@ -51,7 +54,7 @@ def get_movie_reviews(movie_url):
     review_page_urls = get_review_page_urls(movie_url)
     movie_reviews = []
     for review_page_url in review_page_urls:
-        print(review_page_url)
+        #print(review_page_url)
         movie_reviews.extend(get_reviews_in_page(review_page_url))
     return movie_reviews
         
