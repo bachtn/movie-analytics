@@ -4,13 +4,15 @@ import requests
 from bs4 import BeautifulSoup as bs
 import json
 
-def get_review_page_urls(movie_url):
+def get_review_page_urls(movie_url, limit_reviews_nbr=False, nbr_reviews=20):
     """
     Given a movie_url, it returns a list of urls of all review pages.
     In fact, if a movie has more than 10 reviews, each 10 reviews are in a different page.
     """
     soup = bs(requests.get(movie_url).content, "html.parser")
-    review_count = int(soup.find(itemprop="reviewCount").get_text().split(' ')[0])
+    review_count = int(soup.find(itemprop="reviewCount").get_text().split(' ')[0].replace(',', ''))
+    if review_count > nbr_reviews and limit_reviews_nbr:
+        review_count = nbr_reviews
     review_page_urls = []
     for review_page_id in range(0, review_count , 10):
         review_page_urls.append(movie_url + '/reviews?start=' + str(review_page_id))
@@ -41,13 +43,13 @@ def get_reviews_in_page(review_page_url):
             reviews.append(json.dumps(review))
     return reviews
 
-def get_movie_reviews(movie_url):
+def get_movie_reviews(movie_url, limit_reviews_nbr, nbr_reviews):
     """
     Gets the url of all review pages and than, for each page,
     it gets its reviews.
     Returns a list of all the reviews of the given movie.
     """
-    review_page_urls = get_review_page_urls(movie_url)
+    review_page_urls = get_review_page_urls(movie_url, limit_reviews_nbr, nbr_reviews)
     movie_reviews = []
     for review_page_url in review_page_urls:
         #print(review_page_url)
@@ -58,11 +60,15 @@ def get_movie_ratings(movie_url):
     soup = bs(requests.get(movie_url).content, "html.parser")
     rating_value = float(soup.find(itemprop="ratingValue").get_text())
     nbr_votes = int(soup.find(itemprop="ratingCount").get_text().replace(',', ''))
-    return {'rating_value': rating_value, 'nbr_votes': nbr_votes}
+    review_count = int(soup.find(itemprop="reviewCount").get_text().split(' ')[0].replace(',', ''))
+    return {'rating_value': rating_value, 'nbr_votes': nbr_votes, 'review_count': review_count}
 
 movie_url = 'http://akas.imdb.com/title/tt0113101/'
 #get_movie_ratings(movie_url)
-#get_review_page_urls(movie_url)
+"""
+for review_url in get_review_page_urls(movie_url, False, 30):
+    print(review_url)
+"""
 """
 review_list = get_movie_reviews(movie_url)
 print("number of reviews = " + str(len(review_list)))

@@ -2,32 +2,46 @@
 
 import tmdbsimple as tmdb
 import requests
-tmdb.API_KEY = '8689043e90cbfef442156fd038279ade'
-
 from scraper import *
+from kafka import KafkaProducer
+import json, sys
 
 
-def collect_movie_informations(movie_ids):
+tmdb.API_KEY = '8689043e90cbfef442156fd038279ade'
+producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+
+def send_message(movie_dict, topic_name, key):
+    json_str_dump = json.dumps(movie_dict)
+    producer.send(topic_name, key=b'movie', value=json_str_dump.encode('ascii'))
+
+def collect_movie_informations(movie_ids, limit_reviews_nbr=True, nbr_reviews=20):
     nbr_good_movies = 0
+    # Create producer
     for movie_id in movie_ids:
         try:
             movie = tmdb.Movies(movie_id)
             response = movie.info()
             movie_url = 'http://akas.imdb.com/title/' + str(movie.imdb_id)
-            print(movie_url)
-            reviews = get_movie_reviews(movie_url)
-            nbr_good_movies += 1
-            movie_object = { \
-                    'title': movie.title, \
-                    'release_date': movie.release_date, \
-                    'popularity': movie.popularity, \
-                    'budget': movie.budget, \
-                    'movie_url': movie_url, \
-                    'reviews': reviews \
-                    }
-            print('title = ' + movie.title + ', nbr review = ' + str(len(reviews)))
+            rating_nbr_votes = get_movie_ratings(movie_url)
+            if not(rating_nbr_votes['review_count'] < nbr_reviews):
+                nbr_good_movies += 1
+                reviews = get_movie_reviews(movie_url, limit_reviews_nbr, nbr_reviews)
+                movie_dict = { \
+                        'id':  movie_id, \
+                        'title': movie.title, \
+                        'release_date': movie.release_date, \
+                        'popularity': movie.popularity, \
+                        'rating': rating_nbr_votes['rating_value'], \
+                        'nbr_votes': rating_nbr_votes['nbr_votes'], \
+                        'budget': movie.budget, \
+                        'runtime': movie.runtime, \
+                        'movie_url': movie_url, \
+                        'reviews': reviews \
+                        }
+                print('title = ' + movie.title + ', nbr review = ' + str(len(reviews)))
+                send_message(movie_dict, 'movie_data', 'movie')
         except Exception as e:
-            #print(str(e))
+            print(str(e))
             pass
     print(str(nbr_good_movies))
 
@@ -45,4 +59,4 @@ def get_movies_by_name(movie_names):
 movie_ids = [297762, 313369, 364, 324849, 11, 140607, 330459]
 movie_names = ['Batman', 'La La Land', 'Wonder women', 'star wars']
 #get_movies_by_name(movie_names)
-collect_movie_informations(movie_ids)
+collect_movie_informations(movie_ids, True)
