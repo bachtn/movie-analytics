@@ -26,16 +26,22 @@ def collect_movie_informations(movie_ids, limit_reviews_nbr=True, nbr_reviews=20
             if not(rating_nbr_votes['review_count'] < nbr_reviews):
                 nbr_good_movies += 1
                 reviews = get_movie_reviews(movie_url, limit_reviews_nbr, nbr_reviews)
+                # TODO: add actors: scrap
+                genres = [g['name'] for g in movie.genres]
+                print(genres)
                 movie_dict = { \
                         'id':  movie_id, \
                         'title': movie.title, \
                         'release_date': movie.release_date, \
+                        'genres': genres, \
+                        'adult': movie.adult, \
                         'popularity': movie.popularity, \
                         'rating': rating_nbr_votes['rating_value'], \
                         'nbr_votes': rating_nbr_votes['nbr_votes'], \
                         'budget': movie.budget, \
-                        'runtime': movie.runtime, \
-                        'movie_url': movie_url, \
+                        'revenue': movie.revenue, \
+                        'duration': movie.runtime, \
+                        'url': movie_url, \
                         'reviews': reviews \
                         }
                 print('title = ' + movie.title + ', nbr review = ' + str(len(reviews)))
