@@ -7,7 +7,7 @@ import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
 import utils.MovieUtils._
 import org.apache.spark.rdd.RDD
 
-object data_collection_consumer {
+object SaveToHDFS {
 
   def main(arg: Array[String]): Unit = {
 
@@ -32,10 +32,8 @@ object data_collection_consumer {
     {
       rdd =>
         if (rdd.count > 0)
-          rdd.repartition(1).saveAsTextFile("./test/" + rdd.hashCode())
+          rdd.repartition(1).saveAsTextFile("./HDFS/" + rdd.hashCode())
     }
-
-    val jsons = sc.textFile("/home/bach/Documents/projects/hadoop/movie-analytics/test/[0-9]*/part-[0-9]*")
 
     ssc.start()
     ssc.awaitTermination()

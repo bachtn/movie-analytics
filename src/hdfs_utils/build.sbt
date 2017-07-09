@@ -1,9 +1,4 @@
-name := "Spark Project"
-
-version := "1.0"
-
-scalaVersion := "2.11.8"
-name := "Spark Project"
+name := "HDFS Utils"
 
 version := "1.0"
 
