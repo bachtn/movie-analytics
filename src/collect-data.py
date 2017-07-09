@@ -2,7 +2,7 @@
 
 import tmdbsimple as tmdb
 import requests
-from scraper import *
+from reviewCollector import *
 from kafka import KafkaProducer
 import json, sys
 
