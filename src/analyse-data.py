@@ -16,12 +16,12 @@ def get_text_score(text):
     [0.0, 1.0] where 0.0 is very objective and 1.0 is very
     subjective.
     """
-    text = unicodedata.normalize('NFKD', text).encode('ascii','ignore')
+    text = unicodedata.normalize('NFKD', text).encode('ascii','ignore').decode('utf-8')
     text_score = 0
     for sentence in TextBlob(text).sentences:
         text_score += sentence.polarity if sentence.subjectivity == 0 \
                 else sentence.polarity * sentence.subjectivity
-    return text_score
+    return "%.2f" % text_score
 
 def send_message(producer, movie_dict, topic_name, key):
     json_str_dump = json.dumps(movie_dict)
@@ -30,9 +30,12 @@ def send_message(producer, movie_dict, topic_name, key):
 def sentiment_analysis(topic_name):
     consumer = KafkaConsumer(topic_name, group_id='kafka-streaming-example', bootstrap_servers=['localhost:9092'])
     producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+    nbr_message = 0
     for message in consumer:
+        nbr_message += 1
         consumer.commit()
-        movie_dict = json.loads(message.value)
+        movie_dict = json.loads(message.value.decode('utf-8'))
+        print("Received message " + str(nbr_message) + ", movie title = " + movie_dict['title'])
         reviews = movie_dict['reviews']
         updated_reviews = []
         movie_popularity = 0
@@ -42,7 +45,7 @@ def sentiment_analysis(topic_name):
             content_score = get_text_score(review["content"])
             review.update({'title_score': title_score, 'content_score': content_score})
             updated_reviews.append(review)
-        movie_dict.update({'reviews': updated_reviews})
+        movie_dict.update({'reviews': updated_reviews, 'popularity_from_reviews': str(0)})
         send_message(producer, movie_dict, 'movie_popularity', 'movie_sentiment')
 
 sentiment_analysis('movie_data')

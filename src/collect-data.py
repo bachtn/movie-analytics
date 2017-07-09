@@ -32,15 +32,15 @@ def collect_movie_informations(movie_ids, limit_reviews_nbr=True, nbr_reviews=20
                 movie_dict = { \
                         'id':  movie_id, \
                         'title': movie.title, \
-                        'release_date': movie.release_date, \
+                        'release_date': str(movie.release_date), \
                         'genres': genres, \
                         'adult': movie.adult, \
-                        'popularity': movie.popularity, \
-                        'rating': rating_nbr_votes['rating_value'], \
-                        'nbr_votes': rating_nbr_votes['nbr_votes'], \
-                        'budget': movie.budget, \
-                        'revenue': movie.revenue, \
-                        'duration': movie.runtime, \
+                        'popularity': str("%.2f" % movie.popularity), \
+                        'rating': str(rating_nbr_votes['rating_value']), \
+                        'nbr_votes': str(rating_nbr_votes['nbr_votes']), \
+                        'budget': str(movie.budget), \
+                        'revenue': str(movie.revenue), \
+                        'duration': str(movie.runtime), \
                         'url': movie_url, \
                         'reviews': reviews \
                         }
