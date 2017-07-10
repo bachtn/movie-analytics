@@ -22,16 +22,13 @@ object SaveToHDFS {
     )
 
     val topicMap = topics.split(",").map((_, numThreads.toInt)).toMap
-    val movies_str: DStream[String] = KafkaUtils.createStream[String, String, StringDecoder, StringDecoder](
+    val movies: DStream[String] = KafkaUtils.createStream[String, String, StringDecoder, StringDecoder](
         ssc, kafkaConf, topicMap, StorageLevel.MEMORY_ONLY
       ).map(_._2)
-    val movies = movies_str.flatMap(parseMovie)
-    movies.map(movie => (movie.title, movie.popularity)).print()
     movies.foreachRDD {
       rdd => if (rdd.count > 0)
           rdd.repartition(1).saveAsTextFile("./HDFS/" + rdd.hashCode())
     }
-
     ssc.start()
     ssc.awaitTermination()
   }

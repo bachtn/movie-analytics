@@ -30,6 +30,7 @@ def get_movie_popularity(movie_score):
         return 2
     elif (movie_score < 0):
         return -2
+    return 0
 
 
 def send_message(producer, movie_dict, topic_name, key):
@@ -52,7 +53,7 @@ def sentiment_analysis(topic_name):
             review = json.loads(reviews[i])
             title_score = get_text_score(review["title"])
             content_score = get_text_score(review["content"])
-            movie_popularity += get_movie_popularity(title_score * 0.4 + content_score * 0.6)
+            movie_popularity += get_movie_popularity(float(title_score) * 0.4 + float(content_score) * 0.6)
             review.update({'title_score': title_score, 'content_score': content_score})
             updated_reviews.append(review)
         movie_dict.update({'reviews': updated_reviews, 'popularity_from_reviews': str(movie_popularity)})
