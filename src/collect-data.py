@@ -65,4 +65,4 @@ def get_movies_by_name(movie_names):
 movie_ids = [297762, 313369, 364, 324849, 11, 140607, 330459]
 movie_names = ['Batman', 'La La Land', 'Wonder women', 'star wars']
 #get_movies_by_name(movie_names)
-collect_movie_informations(movie_ids, True)
+collect_movie_informations(range(100), True)

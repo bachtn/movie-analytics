@@ -5,7 +5,7 @@ Install kafka, TextBlob, tmdbsimple, beautifulSoup4, requests, json,
 
 # How to use:
 ## 1 - Download Kafka
-https://www.apache.org/dyn/closer.cgi?path=/kafka/0.11.0.0/kafka_2.11-0.11.0.0.tgz
+https://www.apache.org/dyn/closer.cgi?path=/kafka/0.11.0.0/kafka\_2.11-0.11.0.0.tgz
 
 ## 2 - Start the server (ZooKeeper)
 > bin/zookeeper-server-start.sh config/zookeeper.properties
@@ -27,7 +27,15 @@ https://www.apache.org/dyn/closer.cgi?path=/kafka/0.11.0.0/kafka_2.11-0.11.0.0.t
 ## 7 - Analyse movie reviews:
 > python analyse-data.py
 
-## 8 - To be continued
+## 8 - Save data to hdfs
+> cd hdfs\_utils
+> sbt run
+
+## 9 - Launch Zepplin notebook
+* Download zepplin
+> zeppelin-0.7.2-bin-all/bin/zeppelin.sh start 
+* go to localhost:8080 in your web browser
+
 
 ## The steps 6 and 7 can be executed in the same time
 
