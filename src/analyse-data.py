@@ -23,6 +23,15 @@ def get_text_score(text):
                 else sentence.polarity * sentence.subjectivity
     return "%.2f" % text_score
 
+def get_movie_popularity(movie_score):
+    if (movie_score > 1):
+        return 5
+    elif (movie_score > 0.5):
+        return 2
+    elif (movie_score < 0):
+        return -2
+
+
 def send_message(producer, movie_dict, topic_name, key):
     json_str_dump = json.dumps(movie_dict)
     producer.send(topic_name, key=b'movie', value=json_str_dump.encode('ascii'))
@@ -43,9 +52,10 @@ def sentiment_analysis(topic_name):
             review = json.loads(reviews[i])
             title_score = get_text_score(review["title"])
             content_score = get_text_score(review["content"])
+            movie_popularity += get_movie_popularity(title_score * 0.4 + content_score * 0.6)
             review.update({'title_score': title_score, 'content_score': content_score})
             updated_reviews.append(review)
-        movie_dict.update({'reviews': updated_reviews, 'popularity_from_reviews': str(0)})
+        movie_dict.update({'reviews': updated_reviews, 'popularity_from_reviews': str(movie_popularity)})
         send_message(producer, movie_dict, 'movie_popularity', 'movie_sentiment')
 
 sentiment_analysis('movie_data')
