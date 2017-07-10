@@ -3,9 +3,8 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.streaming.kafka._
 import kafka.serializer.StringDecoder
-import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
+import org.apache.spark.streaming.dstream.DStream
 import utils.MovieUtils._
-import org.apache.spark.rdd.RDD
 
 object SaveToHDFS {
 
@@ -19,7 +18,7 @@ object SaveToHDFS {
     val kafkaConf = Map(
       "metadata.broker.list" -> "localhost:6667",
       "zookeeper.connect" -> "localhost:2181",
-      "group.id" -> "kafka-streaming-example"
+      "group.id" -> "kafka-movie-analytics"
     )
 
     val topicMap = topics.split(",").map((_, numThreads.toInt)).toMap
@@ -28,16 +27,13 @@ object SaveToHDFS {
       ).map(_._2)
     val movies = movies_str.flatMap(parseMovie)
     movies.map(movie => (movie.title, movie.popularity)).print()
-    movies.foreachRDD
-    {
-      rdd =>
-        if (rdd.count > 0)
+    movies.foreachRDD {
+      rdd => if (rdd.count > 0)
           rdd.repartition(1).saveAsTextFile("./HDFS/" + rdd.hashCode())
     }
 
     ssc.start()
     ssc.awaitTermination()
   }
-
 }
 
