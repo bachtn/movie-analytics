@@ -14,7 +14,7 @@ https://www.apache.org/dyn/closer.cgi?path=/kafka/0.11.0.0/kafka\_2.11-0.11.0.0.
 > bin/kafka-server-start.sh config/server.properties
 
 ## 4 - Create the needed topics ('movie\_data' and 'movie\_popularity')
-> bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic movie\_data
+> bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic movie\_data  
 > bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic movie\_popularity
 
 ## 5 - Test that the topics were created
