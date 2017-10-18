@@ -1,5 +1,14 @@
 # movie-analytics
 
+# Overview
+•• Pipeline of different micro-services all communicating with Kafka.
+•• Used Languages and Technologies: Scala | Spark-Streaming | HDFS | Kafka | Zepplin | Python 
+•• Developed features:
+• Scrape the web and collect movie data (Basic infos, reviews, rates, etc)
+• Sentiment Analysis for the movie reviews.
+• Data processing (save data to HDFS).
+• Data visualization on a Zepplin notebook (data read from HDFS).
+
 # Requirements:
 Install kafka, TextBlob, tmdbsimple, beautifulSoup4, requests, json, 
 
